@@ -31,6 +31,7 @@ const RestarauntListBox = (props) => {
     })
     .catch((err) => {
         console.log(err)})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateRestarauntList = () => {
@@ -97,40 +98,6 @@ const RestarauntListBox = (props) => {
     })
   };
 
-  function AddRestaraunt() {
-    if (!addPrompt) {
-      return (
-        <Button style={{margin: "2rem"}} className = "unvote-btn" onClick = {() => {setAddPrompt(true)}}>
-          Add a new one
-        </Button>
-      )
-    } else {
-      var newLocationName = "";
-      return (
-        <Fade bottom when={addPrompt}>
-            <h1>Add a New Option</h1>
-            <Form.Row style = {{margin: "3rem"}}className="align-items-center">
-                <Form.Label>Location Name</Form.Label>
-                <Form.Control type="locationname" placeholder="Enter Location Name"
-                onChange={(e)=>{newLocationName = e.target.value}}/>
-            </Form.Row>
-            <Button className="unvote-btn" onClick = { () => {
-              if (newLocationName != '') {
-                addNewRestaraunt(newLocationName)
-                setUpvoteDict((upvoteDict) => {
-                  upvoteDict[newLocationName] = true
-                  return (upvoteDict)
-                })
-              }
-                setAddPrompt(false)
-            }}>
-              Submit
-            </Button>
-        </Fade>
-      )
-    }
-  }
-
   function AddSpecialRestaraunt() {
     var newLocationName = "";
     return (
@@ -148,7 +115,7 @@ const RestarauntListBox = (props) => {
                 onChange={(e)=>{newLocationName = e.target.value}}/>
             </Form.Row>
             <Button style = {{margin: "1rem"}} className="unvote-btn" onClick = { () => {
-              if (newLocationName != '') {
+              if (newLocationName !== '') {
                 addNewRestaraunt(newLocationName)
                 setUpvoteDict((upvoteDict) => {
                   upvoteDict[newLocationName] = true
@@ -167,7 +134,7 @@ const RestarauntListBox = (props) => {
   return (
     <>
         <div className="card-body list-wrapper">
-        <a>localhost:3000/{pollId}</a>
+        <a href= {`localhost:3000/${pollId}`} >localhost:3000/{pollId}</a>
         <ul>
           <Form style={{margin: "2rem"}}>
             {restarauntList.map((value) => {
