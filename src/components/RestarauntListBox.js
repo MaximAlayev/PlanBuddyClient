@@ -18,7 +18,7 @@ const RestarauntListBox = (props) => {
     }
     setPollId(sessions_poll_id)
     //http://localhost:5000
-    Axios.get(`https://plan-buddy.herokuapp.com/api/get-restaraunt-list/${sessions_poll_id}`)
+    Axios.get(`/api/get-restaraunt-list/${sessions_poll_id}`)
     .then((response) => {
       console.log(response.data)
       setRestarauntList(response.data)
@@ -35,7 +35,7 @@ const RestarauntListBox = (props) => {
   }, []);
 
   const updateRestarauntList = () => {
-    Axios.get(`https://plan-buddy.herokuapp.com/api/get-restaraunt-list/${pollId}`)
+    Axios.get(`/api/get-restaraunt-list/${pollId}`)
     .then((response) => {
       console.log(upvoteDict)
       console.log(response.data)
@@ -48,7 +48,7 @@ const RestarauntListBox = (props) => {
 
 
   const addNewRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/add-restaraunt/`, {
+    Axios.post(`/api/add-restaraunt/`, {
       pollId: pollId,
       restarauntName: restarauntName
     })
@@ -65,7 +65,7 @@ const RestarauntListBox = (props) => {
   };
 
   const upvoteRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/upvote-restaraunt/`, {
+    Axios.post(`/api/upvote-restaraunt/`, {
       pollId: pollId,
       restarauntName: restarauntName
     })
@@ -82,7 +82,7 @@ const RestarauntListBox = (props) => {
   };
 
   const downvoteRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/downvote-restaraunt/`, {
+    Axios.post(`/api/downvote-restaraunt/`, {
       pollId: pollId,
       restarauntName: restarauntName
     })
