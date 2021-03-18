@@ -23,8 +23,10 @@ const RestarauntListBox = (props) => {
     if (props.usingLink) {
       sessions_poll_id = props.match.params.id
     }
-    setPollId(sessions_poll_id)
     var tempUserId = document.cookie.split('; ').find(row => row.startsWith('user_id=')).split('=')[1]
+    setUserId(tempUserId)
+    setPollId(sessions_poll_id)
+    
     //https://cors-anywhere.herokuapp.com/
     Axios.get(`${API_ID}/api/get-restaraunt-list/${sessions_poll_id}/${tempUserId}`)
     .then((response) => {
