@@ -4,39 +4,44 @@ import Axios from 'axios';
 import Fade from 'react-reveal/Fade';
 import './RestarauntListBox.css'
 
+const API_ID = 'http://localhost:5000'
+//const API_ID = 'https://plan-buddy.herokuapp.com'
 const RestarauntListBox = (props) => {
-  const [pollId, setPollId] = useState();
+  const [pollId, setPollId] = useState('');
+  const [userId, setUserId] = useState('');
   const [restarauntList, setRestarauntList] = useState([]);
   const [upvoteDict, setUpvoteDict] = useState({});
   const [addPrompt, setAddPrompt] = useState(false);
 
   useEffect(() => {
+    if (document.cookie === '') {
+      document.cookie =`user_id=${Math.random().toString(36).substr(2, 9)}`
+    }
+    console.log(document.cookie)
     // Eventually ensure that this id is unique otherwise people screw over eachother's polls
     var sessions_poll_id = Math.random().toString(36).substr(2, 9)
     if (props.usingLink) {
       sessions_poll_id = props.match.params.id
     }
     setPollId(sessions_poll_id)
+    var tempUserId = document.cookie.split('; ').find(row => row.startsWith('user_id=')).split('=')[1]
+    setUserId(tempUserId)
     //http://localhost:5000
     //https://cors-anywhere.herokuapp.com/
-    Axios.get(`https://plan-buddy.herokuapp.com/api/get-restaraunt-list/${sessions_poll_id}`)
+    Axios.get(`${API_ID}/api/get-restaraunt-list/${sessions_poll_id}/${tempUserId}`)
     .then((response) => {
       console.log(response.data)
       setRestarauntList(response.data)
-      setUpvoteDict((upvoteDict) => {
-        for (var name of response.data) {
-          upvoteDict[name[0]] = false
-        }
-        return (upvoteDict)
-      })
+      updateUpvoteDict(sessions_poll_id, tempUserId)
     })
     .catch((err) => {
-        console.log(err)})
+        console.log(err)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateRestarauntList = () => {
-    Axios.get(`https://plan-buddy.herokuapp.com/api/get-restaraunt-list/${pollId}`)
+    Axios.get(`${API_ID}/api/get-restaraunt-list/${pollId}/${userId}`)
     .then((response) => {
       console.log(upvoteDict)
       console.log(response.data)
@@ -47,18 +52,27 @@ const RestarauntListBox = (props) => {
     })
   };
 
+  const updateUpvoteDict = (pollId, userId) => {
+    Axios.get(`${API_ID}/api/get-upvote-dict/${pollId}/${userId}`)
+    .then((response) => {
+      setUpvoteDict(response.data)
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+  };
+
 
   const addNewRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/add-restaraunt/`, {
+    Axios.post(`${API_ID}/api/add-restaraunt/`, {
       pollId: pollId,
+      userId: userId,
       restarauntName: restarauntName
     })
     .then((response) => {
       updateRestarauntList()
-      setUpvoteDict((upvoteDict) => {
-        upvoteDict[restarauntName] = false
-        return (upvoteDict)
-      })
+      updateUpvoteDict(pollId, userId)
+      setAddPrompt(false)
     })
     .catch((err) => {
       console.log(err)
@@ -66,16 +80,14 @@ const RestarauntListBox = (props) => {
   };
 
   const upvoteRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/upvote-restaraunt/`, {
+    Axios.post(`${API_ID}/api/upvote-restaraunt/`, {
       pollId: pollId,
+      userId: userId,
       restarauntName: restarauntName
     })
     .then((response) => {
       updateRestarauntList()
-      setUpvoteDict((upvoteDict) => {
-        upvoteDict[restarauntName] = true
-        return (upvoteDict)
-      })
+      updateUpvoteDict(pollId, userId)
     })
     .catch((err) => {
       console.log(err)
@@ -83,16 +95,14 @@ const RestarauntListBox = (props) => {
   };
 
   const downvoteRestaraunt = (restarauntName) => {
-    Axios.post(`https://plan-buddy.herokuapp.com/api/downvote-restaraunt/`, {
+    Axios.post(`${API_ID}/api/downvote-restaraunt/`, {
       pollId: pollId,
+      userId: userId,
       restarauntName: restarauntName
     })
     .then((response) => {
       updateRestarauntList()
-      setUpvoteDict((upvoteDict) => {
-        upvoteDict[restarauntName] = false
-        return (upvoteDict)
-      })
+      updateUpvoteDict(pollId, userId)
     })
     .catch((err) => {
       console.log(err)
@@ -118,12 +128,7 @@ const RestarauntListBox = (props) => {
             <Button style = {{margin: "1rem"}} className="unvote-btn" onClick = { () => {
               if (newLocationName !== '') {
                 addNewRestaraunt(newLocationName)
-                setUpvoteDict((upvoteDict) => {
-                  upvoteDict[newLocationName] = true
-                  return (upvoteDict)
-                })
               }
-                setAddPrompt(false)
             }}>
               Submit
             </Button>
@@ -135,7 +140,7 @@ const RestarauntListBox = (props) => {
   return (
     <>
         <div className="card-body list-wrapper">
-        <a href= {`https://suspicious-wiles-b14340.netlify.app/${pollId}`} >https://suspicious-wiles-b14340.netlify.app/{pollId}</a>
+        <a href= {`https://planbuddy.alayev.com/${pollId}`}>https://planbuddy.alayev.com/{pollId}</a>
         <ul>
           <Form style={{margin: "2rem"}}>
             {restarauntList.map((value) => {
