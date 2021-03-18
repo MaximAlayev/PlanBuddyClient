@@ -4,8 +4,8 @@ import Axios from 'axios';
 import Fade from 'react-reveal/Fade';
 import './RestarauntListBox.css'
 
-const API_ID = 'http://localhost:5000'
-//const API_ID = 'https://plan-buddy.herokuapp.com'
+//const API_ID = 'http://localhost:5000'
+const API_ID = 'https://plan-buddy.herokuapp.com'
 const RestarauntListBox = (props) => {
   const [pollId, setPollId] = useState('');
   const [userId, setUserId] = useState('');
@@ -25,8 +25,6 @@ const RestarauntListBox = (props) => {
     }
     setPollId(sessions_poll_id)
     var tempUserId = document.cookie.split('; ').find(row => row.startsWith('user_id=')).split('=')[1]
-    setUserId(tempUserId)
-    //http://localhost:5000
     //https://cors-anywhere.herokuapp.com/
     Axios.get(`${API_ID}/api/get-restaraunt-list/${sessions_poll_id}/${tempUserId}`)
     .then((response) => {
